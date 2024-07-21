@@ -2,8 +2,7 @@ import httpStatus from "http-status";
 
 import ApiError from "../utils/ApiError.js";
 import Carts from "../models/carts.model.js";
-import Attributes from "../models/attribute.model.js";
-import attributeService from "./attribute.service.js";
+import attributeService from "./product/attribute.service.js";
 
 const getCartsByIdUser = async (user_id) => {
   return await Carts.findOne({ user: user_id }).populate([

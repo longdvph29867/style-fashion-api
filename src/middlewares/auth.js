@@ -4,9 +4,6 @@ import ApiError from "../utils/ApiError.js";
 import config from "../config/config.js";
 import { roleRights } from "../config/roles.js";
 import userService from "../services/user.service.js";
-// import ApiError from "../utils/ApiError";
-// import { roleRights } from "../config/roles";
-// import config from "../config/config";
 
 const verifyToken = (token) => {
   return new Promise((resolve, reject) => {

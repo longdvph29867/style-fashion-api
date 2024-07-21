@@ -1,5 +1,5 @@
-import Products from "../models/product.model.js";
-import ApiError from "../utils/ApiError.js";
+import Products from "../../models/Product/Products.model.js";
+import ApiError from "../../utils/ApiError.js";
 import httpStatus from "http-status";
 import attributeService from "./attribute.service.js";
 
@@ -24,24 +24,26 @@ const getProductBySlug = async (slugProduct) => {
   return product;
 };
 
-const createProducts = async (bodyProduct) => {
-  if (await Products.isSlugTaken(bodyProduct.slug)) {
+const create = async (body) => {
+  if (await Products.isSlugTaken(body.slug)) {
     throw new ApiError(httpStatus.NOT_FOUND, "Products already exists");
   }
-  const newAttrbutes = await attributeService.createAttributeMany(
-    bodyProduct.attributes
-  ); 
+  const newAttrbutes = await attributeService.createMany(body.attributes);
   if (!newAttrbutes) {
     throw new ApiError(httpStatus.NOT_FOUND, "Attribute create failed");
   }
-  bodyProduct.minPrice = Math.min(
-    ...newAttrbutes.map((attr) => attr.discount == 0 ? attr.price: attr.discount)
-  );
-  bodyProduct.maxPrice = Math.max(
-    ...newAttrbutes.map((attr) => attr.discount == 0 ? attr.price: attr.discount)
-  );
+  // body.minPrice = Math.min(
+  //   ...newAttrbutes.map((attr) =>
+  //     attr.discount == 0 ? attr.price : attr.discount
+  //   )
+  // );
+  // body.maxPrice = Math.max(
+  //   ...newAttrbutes.map((attr) =>
+  //     attr.discount == 0 ? attr.price : attr.discount
+  //   )
+  // );
   const insertedIds = newAttrbutes.map((doc) => doc._id);
-  const dataProduct = { ...bodyProduct,attributes: insertedIds};
+  const dataProduct = { ...body, attributes: insertedIds };
   const newProduct = await Products.create(dataProduct);
   if (!newProduct) {
     throw new ApiError(
@@ -62,15 +64,19 @@ const updateProducts = async (idProduct, bodyProduct) => {
       throw new ApiError(httpStatus.NOT_FOUND, "Products not found");
     }
 
-    await attributeService.deleteAttributeMany(product.attributes);
-    const newAttrbutes = await attributeService.createAttributeMany(
+    await attributeService.deleteMany(product.attributes);
+    const newAttrbutes = await attributeService.createMany(
       bodyProduct.attributes
     );
     bodyProduct.minPrice = Math.min(
-      ...newAttrbutes.map((attr) => attr.discount == 0 ? attr.price: attr.discount)
+      ...newAttrbutes.map((attr) =>
+        attr.discount == 0 ? attr.price : attr.discount
+      )
     );
     bodyProduct.maxPrice = Math.max(
-      ...newAttrbutes.map((attr) => attr.discount == 0 ? attr.price: attr.discount)
+      ...newAttrbutes.map((attr) =>
+        attr.discount == 0 ? attr.price : attr.discount
+      )
     );
     const insertedIds = newAttrbutes.map((doc) => doc._id);
     const dataProduct = { ...bodyProduct, attributes: insertedIds };
@@ -128,7 +134,7 @@ const updateScoreReviewProduct = async (productId, score, type) => {
 };
 const productService = {
   getAllProducts,
-  createProducts,
+  create,
   updateProducts,
   getProductByID,
   getProductBySlug,
