@@ -16,6 +16,7 @@ import routerWard from "./City/ward.route.js";
 import routerPayment from "./payment.route.js";
 import productTypeRouter from "./productType.router.js";
 import routerOrderStatus from "./orderStatus.route.js";
+import routerVoucher from "./voucher.route.js";
 const routes = express.Router();
 
 routes.use("/categories", categoryRouter);
@@ -36,6 +37,8 @@ routes.use("/orders", orderRouter);
 routes.use("/payments", routerPayment);
 routes.use("/product-type", productTypeRouter);
 routes.use("/order-status", routerOrderStatus);
+routes.use("/vouchers", routerVoucher);
+
 export default routes;
 
 /**
