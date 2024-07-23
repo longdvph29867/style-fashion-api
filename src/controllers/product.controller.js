@@ -85,7 +85,7 @@ class ProductController {
       );
       data.attributes = attributes.map((attribute) => attribute._id);
       data.variants = productVariantIds;
-      // data.slug = slugify(data.name, { lower: true });
+      data.slug = slugify(data.name, { lower: true });
       const result = await productService.create(data);
       res.status(httpStatus.CREATED).json(result);
     } catch (err) {

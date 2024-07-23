@@ -128,13 +128,27 @@ export default cartRouter;
  *               - categories
  *               - description
  *               - attributes
- *               - name
- *               - price
- *               - stock
+ *               - variants
  *             properties:
  *               name:
  *                 type: string
  *               thumbnail:
+ *                 type: string
+ *               categories:
+ *                 type: array
+ *                 items:
+ *                   type: string
+ *               gallery:
+ *                 type: array
+ *                 items:
+ *                   type: string
+ *               featured:
+ *                 type: boolean
+ *               description:
+ *                 type: string
+ *               shortDescription:
+ *                 type: string
+ *               video:
  *                 type: string
  *               attributes:
  *                 type: array
@@ -143,41 +157,67 @@ export default cartRouter;
  *                   properties:
  *                     name:
  *                       type: string
- *                     price:
- *                       type: integer
+ *                     values:
+ *                       type: array
+ *                       items:
+ *                         type: object
+ *                         properties:
+ *                           name:
+ *                             type: string
+ *                           image:
+ *                             type: string
+ *               variants:
+ *                 type: array
+ *                 items:
+ *                   type: object
+ *                   properties:
+ *                     tier_index:
+ *                       type: array
+ *                       items:
+ *                         type: integer
+ *                     currentPrice:
+ *                       type: number
+ *                     originalPrice:
+ *                       type: number
  *                     stock:
  *                       type: integer
- *                     discount:
- *                       type: integer
- *                     image:
- *                       type: string
- *               gallery:
- *                 type: array
- *                 items:
- *                   type: string
- *               categories:
- *                 type: array
- *                 items:
- *                   type: string
- *               description:
- *                 type: string
- *               video:
- *                 type: string
  *           example:
- *             name: "String"
- *             thumbnail: "String"
+ *             name: "product name long"
+ *             thumbnail: "thumbnail.png"
+ *             categories: ["669e9334e80f375d88821538"]
+ *             gallery: ["image.png"]
+ *             featured: true
+ *             description: "product description"
+ *             shortDescription: "product shortDescription"
+ *             video: "video.mp4"
  *             attributes:
- *               - name: "String"
- *                 price: number
- *                 stock: number
- *                 discount: 0
- *                 image: "String"
- *             gallery:
- *               - "String"
- *             categories:
- *               - "Object Id"
- *             description: "String"
- *             video: "String"
+ *               - name: "Size"
+ *                 values:
+ *                   - name: "S"
+ *                     image: "value.jpg"
+ *                   - name: "M"
+ *                     image: "value2.jpg"
+ *               - name: "Color"
+ *                 values:
+ *                   - name: "Red"
+ *                   - name: "Green"
+ *             variants:
+ *               - tier_index: [0, 0]
+ *                 currentPrice: 100
+ *                 originalPrice: 10
+ *                 stock: 10
+ *               - tier_index: [0, 1]
+ *                 currentPrice: 100
+ *                 originalPrice: 10
+ *                 stock: 20
+ *               - tier_index: [1, 0]
+ *                 currentPrice: 1000
+ *                 originalPrice: 10
+ *                 stock: 5
+ *               - tier_index: [1, 1]
+ *                 currentPrice: 100
+ *                 originalPrice: 10
+ *                 stock: 10
  *     responses:
  *       '200':
  *         description: Successfully created product
@@ -190,7 +230,7 @@ export default cartRouter;
  *                   type: string
  *                   description: The product ID
  *               example:
- *                   {}
+ *                 id: "60d21b4667d0d8992e610c85"
  *       '400':
  *         description: Bad request
  *         content:
