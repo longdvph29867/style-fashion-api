@@ -1,17 +1,14 @@
-import Attributes from "../../models/Product/Attributes.model.js";
+import Attributes from "../../models/Product/Attribute.model.js";
 import valueAttributesService from "./valueAttribute.service.js";
 
 const getById = async (attributeID) => {
   return await Attributes.findById(attributeID);
 };
-const createMany = async (attributes) => {
-  const valueAttributes = attributes.flatMap((attr) => attr.values);
+const create = async (attribute) => {
   const valueAttributeIds = await valueAttributesService.createMany(
-    valueAttributes
+    attribute.values
   );
-  console.log(valueAttributeIds);
-  return;
-  return await Attributes.insertMany(attributes);
+  return await Attributes.create({ ...attribute, values: valueAttributeIds });
 };
 const deleteMany = async (attributes) => {
   return await Attributes.deleteMany({ _id: { $in: attributes } });
@@ -19,7 +16,7 @@ const deleteMany = async (attributes) => {
 
 const attributeService = {
   getById,
-  createMany,
+  create,
   deleteMany,
 };
 

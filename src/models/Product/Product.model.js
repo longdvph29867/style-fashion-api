@@ -1,9 +1,10 @@
 import { Schema } from "mongoose";
+import slugify from "slugify";
 import { paginate } from "../plugins/paninate.plugin.js";
 import toJSON from "../plugins/toJSON.plugin.js";
 import { connectPrimaryDB } from "../../utils/db.js";
 
-const productsSchema = new Schema(
+const productSchema = new Schema(
   {
     name: { type: String, required: true },
     slug: { type: String, unique: true, lowercase: true },
@@ -21,7 +22,7 @@ const productsSchema = new Schema(
       type: [
         {
           type: Schema.Types.ObjectId,
-          ref: "Attribute",
+          ref: "Attributes",
         },
       ],
       required: true,
@@ -73,6 +74,15 @@ const productsSchema = new Schema(
       type: String,
       required: false,
     },
+    variants: {
+      type: [
+        {
+          type: Schema.Types.ObjectId,
+          ref: "ProductVariants",
+        },
+      ],
+      required: true,
+    },
     purchases: {
       type: Number,
       default: 0,
@@ -89,8 +99,19 @@ const productsSchema = new Schema(
   },
   { collection: "Products", timestamps: true, versionKey: false }
 );
+productSchema.pre("save", function (next) {
+  if (this.isModified("name")) {
+    this.slug = slugify(this.name, { lower: true });
+  }
+  next();
+});
 
-productsSchema.statics.isSlugTaken = async function (
+productSchema.index({ name: 1 });
+productSchema.index({ attributes: 1 });
+productSchema.index({ slug: 1 });
+productSchema.index({ categories: 1 });
+
+productSchema.statics.isSlugTaken = async function (
   productSlug,
   excludeproductId
 ) {
@@ -100,8 +121,8 @@ productsSchema.statics.isSlugTaken = async function (
   });
   return !!products;
 };
-productsSchema.plugin(paginate);
-productsSchema.plugin(toJSON);
-const Products = connectPrimaryDB.model("Products", productsSchema);
+productSchema.plugin(paginate);
+productSchema.plugin(toJSON);
+const Products = connectPrimaryDB.model("Products", productSchema);
 
 export default Products;

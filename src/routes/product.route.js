@@ -7,7 +7,7 @@ import {
   getProductDetail,
   getProducts,
   updateProduct,
-} from "../validations/products.validation.js";
+} from "../validations/product/products.validation.js";
 const cartRouter = express.Router();
 
 cartRouter.get("/", validate(getProducts), productController.getAll);
@@ -17,7 +17,7 @@ cartRouter.get(
   productController.getDetail
 );
 cartRouter.post("/", validate(createProduct), productController.create);
-cartRouter.put("/:id",validate(updateProduct),productController.update);
+cartRouter.put("/:id", validate(updateProduct), productController.update);
 cartRouter.delete("/:id", validate(deleteProduct), productController.remove);
 export default cartRouter;
 

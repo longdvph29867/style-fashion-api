@@ -8,18 +8,6 @@ const valueAttributeSchema = new Schema(
       type: String,
       required: true,
     },
-    price: {
-      type: Number,
-      required: true,
-    },
-    stock: {
-      type: Number,
-      required: true,
-    },
-    discount: {
-      type: Number,
-      default: 0,
-    },
     image: {
       type: String,
     },
@@ -28,9 +16,9 @@ const valueAttributeSchema = new Schema(
 );
 
 valueAttributeSchema.plugin(toJSON);
-const ValueAttributes = connectPrimaryDB.model(
+const ValueAttribute = connectPrimaryDB.model(
   "ValueAttributes",
   valueAttributeSchema
 );
 
-export default ValueAttributes;
+export default ValueAttribute;

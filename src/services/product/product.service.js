@@ -1,4 +1,4 @@
-import Products from "../../models/Product/Products.model.js";
+import Products from "../../models/Product/Product.model.js";
 import ApiError from "../../utils/ApiError.js";
 import httpStatus from "http-status";
 import attributeService from "./attribute.service.js";
@@ -28,30 +28,7 @@ const create = async (body) => {
   if (await Products.isSlugTaken(body.slug)) {
     throw new ApiError(httpStatus.NOT_FOUND, "Products already exists");
   }
-  const newAttrbutes = await attributeService.createMany(body.attributes);
-  if (!newAttrbutes) {
-    throw new ApiError(httpStatus.NOT_FOUND, "Attribute create failed");
-  }
-  // body.minPrice = Math.min(
-  //   ...newAttrbutes.map((attr) =>
-  //     attr.discount == 0 ? attr.price : attr.discount
-  //   )
-  // );
-  // body.maxPrice = Math.max(
-  //   ...newAttrbutes.map((attr) =>
-  //     attr.discount == 0 ? attr.price : attr.discount
-  //   )
-  // );
-  const insertedIds = newAttrbutes.map((doc) => doc._id);
-  const dataProduct = { ...body, attributes: insertedIds };
-  const newProduct = await Products.create(dataProduct);
-  if (!newProduct) {
-    throw new ApiError(
-      httpStatus.INTERNAL_SERVER_ERROR,
-      "Create Products failed"
-    );
-  }
-  return newProduct;
+  return await Products.create(body);
 };
 
 const updateProducts = async (idProduct, bodyProduct) => {
