@@ -1,4 +1,4 @@
-import Products from "../../models/Product/Products.model.js";
+import Products from "../../models/Product/Product.model.js";
 import ApiError from "../../utils/ApiError.js";
 import httpStatus from "http-status";
 import attributeService from "./attribute.service.js";

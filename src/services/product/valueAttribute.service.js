@@ -1,13 +1,14 @@
-import ValueAttributes from "../../models/Product/ValueAttribute.model.js";
+import ValueAttribute from "../../models/Product/ValueAttribute.model.js";
 
 const getById = async (attributeID) => {
-  return await ValueAttributes.findById(attributeID);
+  return await ValueAttribute.findById(attributeID);
 };
-const createMany = async (data) => {
-  return await ValueAttributes.insertMany(data);
+const createMany = async (values) => {
+  const result = await ValueAttribute.insertMany(values);
+  return result.map((value) => value._id);
 };
 const deleteMany = async (attributes) => {
-  return await ValueAttributes.deleteMany({ _id: { $in: attributes } });
+  return await ValueAttribute.deleteMany({ _id: { $in: attributes } });
 };
 
 const valueAttributesService = {
