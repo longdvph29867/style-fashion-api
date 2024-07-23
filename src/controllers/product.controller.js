@@ -8,6 +8,7 @@ import { getCatgoryBySlug } from "../services/category.service.js";
 import attributeService from "../services/product/attribute.service.js";
 import errorMessage from "../config/error.js";
 import productVariantService from "../services/product/productVariant.service.js";
+import valueAttributesService from "../services/product/valueAttribute.service.js";
 const replaceTierIndexWithIds = (result, map) => {
   return map.map((item) => {
     const newTierIndex = item.tier_index.map((index, i) => result[i][index]);
@@ -95,11 +96,23 @@ class ProductController {
   }
   async update(req, res) {
     try {
-      const id = req.params.id;
-      const data = { ...req.body };
-      data.slug = slugify(data.name, { lower: true });
-      const result = await productService.updateProducts(id, data);
-      res.status(httpStatus.CREATED).json(result);
+      const { id } = req.params;
+      const product = await productService.getProductByID(id);
+      if (!product) {
+        throw new ApiError(httpStatus.NOT_FOUND, "Products not found");
+      }
+      await valueAttributesService.deleteMany(
+        product.attributes.flatMap((item) => item.values)
+      );
+      await attributeService.deleteMany(
+        product.attributes.map((item) => item.id)
+      );
+      await productVariantService.deleteMany(product.variants);
+
+      // const data = { ...req.body };
+      // data.slug = slugify(data.name, { lower: true });
+      // const result = await productService.updateProducts(id, data);
+      res.status(httpStatus.CREATED).json(product);
     } catch (err) {
       errorMessage(res, err);
     }
