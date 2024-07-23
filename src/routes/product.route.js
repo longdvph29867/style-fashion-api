@@ -17,7 +17,8 @@ cartRouter.get(
   productController.getDetail
 );
 cartRouter.post("/", validate(createProduct), productController.create);
-cartRouter.put("/:id", validate(updateProduct), productController.update);
+cartRouter.put("/:id", productController.update);
+// cartRouter.put("/:id", validate(updateProduct), productController.update);
 cartRouter.delete("/:id", validate(deleteProduct), productController.remove);
 export default cartRouter;
 

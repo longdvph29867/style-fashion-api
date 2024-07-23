@@ -99,12 +99,6 @@ const productSchema = new Schema(
   },
   { collection: "Products", timestamps: true, versionKey: false }
 );
-// productSchema.pre("save", function (next) {
-//   if (this.isModified("name")) {
-//     this.slug = slugify(this.name, { lower: true });
-//   }
-//   next();
-// });
 
 productSchema.index({ name: 1 });
 productSchema.index({ attributes: 1 });
