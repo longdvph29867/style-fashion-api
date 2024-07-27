@@ -77,20 +77,24 @@ class ProductController {
       });
       const attributes = await Promise.all(attributePromises);
       const attributeIds = attributes.map((item) => item.values);
+      data.attributes = attributes.map((attribute) => attribute._id);
+      data.slug = slugify(data.name, { lower: true });
+      const variants = data.variants;
+
+      delete data.variants;
+      const newProduct = await productService.create(data);
       const productVariants = replaceTierIndexWithIds(
         attributeIds,
-        data.variants
-      );
+        variants
+      ).map((item) => {
+        return { ...item, product: newProduct._id };
+      });
       const productVariantIds = await productVariantService.createMany(
         productVariants
       );
-      data.attributes = attributes.map((attribute) => attribute._id);
-      data.variants = productVariantIds;
-      data.slug = slugify(data.name, { lower: true });
-      const result = await productService.create(data);
-      res.status(httpStatus.CREATED).json(result);
+      await productVariantService.createMany(productVariants);
+      res.status(httpStatus.CREATED).json(newProduct);
     } catch (err) {
-      console.log(err);
       errorMessage(res, err);
     }
   }

@@ -74,15 +74,15 @@ const productSchema = new Schema(
       type: String,
       required: false,
     },
-    variants: {
-      type: [
-        {
-          type: Schema.Types.ObjectId,
-          ref: "ProductVariants",
-        },
-      ],
-      required: true,
-    },
+    // variants: {
+    //   type: [
+    //     {
+    //       type: Schema.Types.ObjectId,
+    //       ref: "ProductVariants",
+    //     },
+    //   ],
+    //   required: true,
+    // },
     purchases: {
       type: Number,
       default: 0,
