@@ -10,6 +10,10 @@ const productVariantSchema = new Schema(
         ref: "ValueAttributes",
       },
     ],
+    product: {
+      type: Schema.Types.ObjectId,
+      ref: "Products",
+    },
     currentPrice: {
       type: Number,
       required: true,
@@ -27,6 +31,7 @@ const productVariantSchema = new Schema(
 );
 
 productVariantSchema.index({ tier_index: 1 });
+productVariantSchema.index({ product: 1 });
 
 productVariantSchema.plugin(toJSON);
 const ProductVariant = connectPrimaryDB.model(
