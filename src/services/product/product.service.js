@@ -1,81 +1,67 @@
-import Products from "../../models/Product/Product.model.js";
+import Product from "../../models/Product/Product.model.js";
 import ApiError from "../../utils/ApiError.js";
 import httpStatus from "http-status";
 import attributeService from "./attribute.service.js";
 
 const getAllProducts = async (filter, options) => {
-  const products = await Products.paginate(filter, options);
+  const products = await Product.paginate(filter, options);
   return products;
 };
 
-const getProductByID = async (idProduct) => {
-  const product = await Products.findOne({ _id: idProduct })
+const getProductById = async (id) => {
+  const product = await Product.findOne({ _id: id })
     .populate("attributes")
     .populate({ path: "categories", select: "-active" })
     .select("-active");
+  if (!product) {
+    throw new ApiError(httpStatus.NOT_FOUND, "Product not found");
+  }
   return product;
 };
 
-const getProductBySlug = async (slugProduct) => {
-  const product = await Products.findOne({ slug: slugProduct })
+// ///
+const getById = async (id) => {
+  const data = await Product.findById(id);
+  if (!data) {
+    throw new ApiError(httpStatus.NOT_FOUND, "Product not found");
+  }
+  return data;
+};
+
+const getProductBySlug = async (slug) => {
+  const product = await Product.findOne({ slug })
     .populate("attributes")
     .populate({ path: "categories", select: "-active" })
     .select("-active");
+  if (!product) {
+    throw new ApiError(httpStatus.NOT_FOUND, "Product not found");
+  }
   return product;
 };
 
 const create = async (body) => {
-  if (await Products.isSlugTaken(body.slug)) {
-    throw new ApiError(httpStatus.NOT_FOUND, "Products already exists");
+  if (await Product.isSlugTaken(body.slug)) {
+    throw new ApiError(httpStatus.NOT_FOUND, "Product already exists");
   }
-  return await Products.create(body);
+  return await Product.create(body);
 };
 
-const updateProducts = async (idProduct, bodyProduct) => {
-  try {
-    if (await Products.isSlugTaken(bodyProduct.slug)) {
-      throw new ApiError(httpStatus.BAD_REQUEST, "Products already exists");
-    }
-    const product = await Products.findById(idProduct);
-    if (!product) {
-      throw new ApiError(httpStatus.NOT_FOUND, "Products not found");
-    }
-
-    await attributeService.deleteMany(product.attributes);
-    const newAttrbutes = await attributeService.createMany(
-      bodyProduct.attributes
-    );
-    bodyProduct.minPrice = Math.min(
-      ...newAttrbutes.map((attr) =>
-        attr.discount == 0 ? attr.price : attr.discount
-      )
-    );
-    bodyProduct.maxPrice = Math.max(
-      ...newAttrbutes.map((attr) =>
-        attr.discount == 0 ? attr.price : attr.discount
-      )
-    );
-    const insertedIds = newAttrbutes.map((doc) => doc._id);
-    const dataProduct = { ...bodyProduct, attributes: insertedIds };
-    const updatedProduct = await Products.findByIdAndUpdate(
-      idProduct,
-      { $set: dataProduct },
-      { new: true, runValidators: true }
-    );
-
-    return updatedProduct;
-  } catch (error) {
-    console.error("Error updating product:", error);
-    throw error;
+const updateProduct = async (id, body) => {
+  const product = await getById(id);
+  if (body.slug && (await Product.isSlugTaken(body.slug))) {
+    throw new ApiError(httpStatus.BAD_REQUEST, "Product already exists");
   }
+  Object.assign(product, body);
+  await product.save();
+  return product;
 };
 
 const deleteProductById = async (productId) => {
-  const product = await getProductByID(productId);
+  const product = await getProductById(productId);
   if (!product) {
     throw new ApiError(httpStatus.NOT_FOUND, "Product not found");
   }
-  await Products.findByIdAndUpdate(product.id, { active: false });
+  await Product.findByIdAndUpdate(product.id, { active: false });
   return product;
 };
 
@@ -83,7 +69,7 @@ const updateScoreReviewProduct = async (productId, score, type) => {
   if (!["update", "delete"].includes(type)) {
     throw new ApiError(httpStatus.BAD_REQUEST, "Invalid type specified");
   }
-  const product = await Products.findById(productId);
+  const product = await Product.findById(productId);
   if (!product) {
     throw new ApiError(httpStatus.NOT_FOUND, "Product not found");
   }
@@ -112,8 +98,8 @@ const updateScoreReviewProduct = async (productId, score, type) => {
 const productService = {
   getAllProducts,
   create,
-  updateProducts,
-  getProductByID,
+  updateProduct,
+  getProductById,
   getProductBySlug,
   deleteProductById,
   updateScoreReviewProduct,

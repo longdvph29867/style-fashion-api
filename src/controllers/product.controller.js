@@ -59,10 +59,6 @@ class ProductController {
       } else {
         product = await productService.getProductBySlug(identifier);
       }
-
-      if (!product) {
-        throw new ApiError(httpStatus.NOT_FOUND, "Product not found");
-      }
       res.send(product);
     } catch (err) {
       errorMessage(res, err);
@@ -80,7 +76,6 @@ class ProductController {
       data.attributes = attributes.map((attribute) => attribute._id);
       data.slug = slugify(data.name, { lower: true });
       const variants = data.variants;
-
       delete data.variants;
       const newProduct = await productService.create(data);
       const productVariants = replaceTierIndexWithIds(
@@ -89,9 +84,6 @@ class ProductController {
       ).map((item) => {
         return { ...item, product: newProduct._id };
       });
-      const productVariantIds = await productVariantService.createMany(
-        productVariants
-      );
       await productVariantService.createMany(productVariants);
       res.status(httpStatus.CREATED).json(newProduct);
     } catch (err) {
@@ -100,22 +92,32 @@ class ProductController {
   }
   async update(req, res) {
     try {
-      const { id } = req.params;
-      const product = await productService.getProductByID(id);
-      if (!product) {
-        throw new ApiError(httpStatus.NOT_FOUND, "Products not found");
+      const { body } = req;
+      if (body.name) {
+        body.slug = slugify(body.name, { lower: true });
       }
+      const product = await productService.updateProduct(req.params.id, body);
+      res.status(httpStatus.CREATED).json(product);
+    } catch (err) {
+      errorMessage(res, err);
+    }
+  }
+
+  async updateAttributeProduct(req, res) {
+    try {
+      const { id } = req.params;
+      const product = await productService.getProductById(id);
       await valueAttributesService.deleteMany(
         product.attributes.flatMap((item) => item.values)
       );
       await attributeService.deleteMany(
         product.attributes.map((item) => item.id)
       );
-      await productVariantService.deleteMany(product.variants);
+      await productVariantService.deleteMany(id);
 
       // const data = { ...req.body };
       // data.slug = slugify(data.name, { lower: true });
-      // const result = await productService.updateProducts(id, data);
+      // const result = await productService.updateProduct(id, data);
       res.status(httpStatus.CREATED).json(product);
     } catch (err) {
       errorMessage(res, err);

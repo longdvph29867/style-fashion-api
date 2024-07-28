@@ -117,6 +117,6 @@ productSchema.statics.isSlugTaken = async function (
 };
 productSchema.plugin(paginate);
 productSchema.plugin(toJSON);
-const Products = connectPrimaryDB.model("Products", productSchema);
+const Product = connectPrimaryDB.model("Products", productSchema);
 
-export default Products;
+export default Product;

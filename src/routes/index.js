@@ -319,4 +319,10 @@ export default routes;
  *         paymentMethod: "VNPAY"
  *         paymentId: "60d0fe4f5311236168a109cc"
  *         voucher: "60d0fe4f5311236168a109cd"
+ *
+ *   securitySchemes:
+ *     bearerAuth:
+ *       type: http
+ *       scheme: bearer
+ *       bearerFormat: JWT
  */

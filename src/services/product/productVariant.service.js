@@ -5,8 +5,8 @@ const createMany = async (values) => {
   return result.map((value) => value._id);
 };
 
-const deleteMany = async (ids) => {
-  return await ProductVariant.deleteMany({ _id: { $in: ids } });
+const deleteMany = async (id) => {
+  return await ProductVariant.deleteMany({ product: id });
 };
 
 const productVariantService = {
