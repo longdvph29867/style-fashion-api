@@ -1,7 +1,7 @@
 import httpStatus from "http-status";
 import ApiError from "../utils/ApiError.js";
 import Review, { reviewStatus } from "../models/Review.model.js";
-import productService from "./product.service.js";
+import productService from "./product/product.service.js";
 
 const createReview = async (body) => {
   return await Review.create(body);

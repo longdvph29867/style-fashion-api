@@ -1,28 +1,38 @@
-import productService from "../services/product.service.js";
+import productService from "../services/product/product.service.js";
 import slugify from "slugify";
 import { pickFilter, pickOption } from "../utils/pick.js";
 import { isValidObjectId } from "mongoose";
 import ApiError from "../utils/ApiError.js";
 import httpStatus from "http-status";
-import {getCatgoryBySlug} from "../services/category.service.js"
+import { getCatgoryBySlug } from "../services/category.service.js";
 
 class ProductController {
   async getAll(req, res) {
     try {
-      if(req.query.categories){
+      if (req.query.categories) {
         const listCategory = req.query.categories.split(",");
-        req.query.categories = await Promise.all(listCategory.map(async category => {
-          if (isValidObjectId(category)) {
-            return category;
-          }
-          const isCategory = await getCatgoryBySlug(category); 
-          if (!isCategory) {
-            throw new ApiError(httpStatus.NOT_FOUND, "Slug category not found");
-          }
-          return isCategory._id;
-        }));
+        req.query.categories = await Promise.all(
+          listCategory.map(async (category) => {
+            if (isValidObjectId(category)) {
+              return category;
+            }
+            const isCategory = await getCatgoryBySlug(category);
+            if (!isCategory) {
+              throw new ApiError(
+                httpStatus.NOT_FOUND,
+                "Slug category not found"
+              );
+            }
+            return isCategory._id;
+          })
+        );
       }
-      const filter = pickFilter(req.query, ["search","categories","gte","lte"]);
+      const filter = pickFilter(req.query, [
+        "search",
+        "categories",
+        "gte",
+        "lte",
+      ]);
       const options = pickOption(req.query, ["sortBy", "limit", "page"]);
       options.populate = "attributes,categories";
       const result = await productService.getAllProducts(filter, options);
@@ -59,7 +69,7 @@ class ProductController {
     try {
       const data = { ...req.body };
       data.slug = slugify(data.name, { lower: true });
-      const result = await productService.createProducts(data);
+      const result = await productService.create(data);
       res.status(httpStatus.CREATED).json(result);
     } catch (err) {
       res.status(500).json({
@@ -74,7 +84,7 @@ class ProductController {
       const data = { ...req.body };
       data.slug = slugify(data.name, { lower: true });
       const result = await productService.updateProducts(id, data);
-      res.status(httpStatus.CREATED).json(result)
+      res.status(httpStatus.CREATED).json(result);
     } catch (err) {
       res.status(500).json({
         name: err.name,

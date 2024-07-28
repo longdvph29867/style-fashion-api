@@ -11,7 +11,7 @@ import axios from "axios";
 import orderStatusService from "../services/orderStatus.service.js";
 import cartService from "../services/cart.service.js";
 import attributeService from "../services/attribute.service.js";
-import productService from "../services/product.service.js";
+import productService from "../services/product/product.service.js";
 import voucherService from "../services/voucher.service.js";
 dotenv.config();
 
