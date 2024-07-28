@@ -9,6 +9,7 @@ import attributeService from "../services/product/attribute.service.js";
 import errorMessage from "../config/error.js";
 import productVariantService from "../services/product/productVariant.service.js";
 import valueAttributesService from "../services/product/valueAttribute.service.js";
+import ProductVariant from "../models/Product/ProductVariant.model.js";
 const replaceTierIndexWithIds = (result, map) => {
   return map.map((item) => {
     const newTierIndex = item.tier_index.map((index, i) => result[i][index]);
@@ -17,21 +18,21 @@ const replaceTierIndexWithIds = (result, map) => {
 };
 const getAll = async (req, res) => {
   try {
-    if (req.query.categories) {
-      const listCategory = req.query.categories.split(",");
-      req.query.categories = await Promise.all(
-        listCategory.map(async (category) => {
-          if (isValidObjectId(category)) {
-            return category;
-          }
-          const isCategory = await getCatgoryBySlug(category);
-          if (!isCategory) {
-            throw new ApiError(httpStatus.NOT_FOUND, "Slug category not found");
-          }
-          return isCategory._id;
-        })
-      );
-    }
+    // if (req.query.categories) {
+    //   const listCategory = req.query.categories.split(",");
+    //   req.query.categories = await Promise.all(
+    //     listCategory.map(async (category) => {
+    //       if (isValidObjectId(category)) {
+    //         return category;
+    //       }
+    //       const isCategory = await getCatgoryBySlug(category);
+    //       if (!isCategory) {
+    //         throw new ApiError(httpStatus.NOT_FOUND, "Slug category not found");
+    //       }
+    //       return isCategory._id;
+    //     })
+    //   );
+    // }
     const filter = pickFilter(req.query, [
       "search",
       "categories",
@@ -39,10 +40,33 @@ const getAll = async (req, res) => {
       "lte",
     ]);
     const options = pickOption(req.query, ["sortBy", "limit", "page"]);
-    options.populate = "attributes,categories";
+    // options.populate = "attributes.values,categories";
+    // options.populate = "categories";
     const result = await productService.getAllProducts(filter, options);
-    res.status(httpStatus.OK).json(result);
+    const productsWithPriceRange = await Promise.all(
+      result.results.map(async (product) => {
+        const variants = await ProductVariant.find({ product: product.id });
+        const prices = variants.map((variant) => variant.currentPrice);
+        const productObj = product.toObject();
+        productObj.maxPrice = Math.max(...prices);
+        productObj.minPrice = Math.min(...prices);
+        productObj.id = productObj._id
+          ? productObj._id.toString()
+          : productObj.id.toString();
+        delete productObj._id;
+        delete productObj.__v;
+        delete productObj.createdAt;
+        delete productObj.updatedAt;
+        delete productObj.active;
+        return productObj;
+      })
+    );
+
+    res
+      .status(httpStatus.OK)
+      .json({ ...result, results: productsWithPriceRange });
   } catch (err) {
+    console.log(err);
     errorMessage(res, err);
   }
 };
@@ -51,7 +75,7 @@ const getDetail = async (req, res) => {
     const { identifier } = req.params;
     let product;
     if (isValidObjectId(identifier)) {
-      product = await productService.getProductByID(identifier);
+      product = await productService.getProductById(identifier);
     } else {
       product = await productService.getProductBySlug(identifier);
     }
