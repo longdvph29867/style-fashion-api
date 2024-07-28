@@ -35,11 +35,11 @@ export const createProduct = {
     thumbnail: Joi.string().required(),
     categories: Joi.array().min(1).max(10).items(Joi.string().custom(objectId)),
     attributes: Joi.array().items(attributeSchema).min(1).max(5).required(),
-    gallery: Joi.array().max(5).items(Joi.string().allow(null, "")),
+    gallery: Joi.array().max(5).items(Joi.string()),
     description: Joi.string().required(),
     shortDescription: Joi.string().required(),
     featured: Joi.boolean(),
-    video: Joi.string().allow(null, ""),
+    video: Joi.string(),
     variants: Joi.array()
       .items(
         Joi.object({
@@ -66,6 +66,25 @@ export const updateProduct = {
     shortDescription: Joi.string(),
     featured: Joi.boolean(),
     video: Joi.string(),
+  }),
+};
+
+export const updateAttributeProduct = {
+  params: Joi.object().keys({
+    id: Joi.required(),
+  }),
+  body: Joi.object().keys({
+    attributes: Joi.array().items(attributeSchema).min(1).max(5).required(),
+    variants: Joi.array()
+      .items(
+        Joi.object({
+          tier_index: Joi.array().required(),
+          currentPrice: Joi.number().required(),
+          originalPrice: Joi.number().required(),
+          stock: Joi.number().required(),
+        })
+      )
+      .required(),
   }),
 };
 
