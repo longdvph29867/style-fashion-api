@@ -44,6 +44,9 @@ const options = {
         url: "https://style-fashion-api.vercel.app/api/v1",
       },
       {
+        url: "https://style-fashion-api-2rrd.vercel.app/api/v1",
+      },
+      {
         url: "http://localhost:8000/api/v1",
       },
     ],

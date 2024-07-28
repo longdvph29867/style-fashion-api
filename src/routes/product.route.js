@@ -8,7 +8,7 @@ import {
   getProducts,
   updateAttributeProduct,
   updateProduct,
-} from "../validations/products.validation.js";
+} from "../validations/product/products.validation.js";
 import { auth } from "../middlewares/auth.js";
 const cartRouter = express.Router();
 
