@@ -18,21 +18,6 @@ const replaceTierIndexWithIds = (result, map) => {
 };
 const getAll = async (req, res) => {
   try {
-    // if (req.query.categories) {
-    //   const listCategory = req.query.categories.split(",");
-    //   req.query.categories = await Promise.all(
-    //     listCategory.map(async (category) => {
-    //       if (isValidObjectId(category)) {
-    //         return category;
-    //       }
-    //       const isCategory = await getCatgoryBySlug(category);
-    //       if (!isCategory) {
-    //         throw new ApiError(httpStatus.NOT_FOUND, "Slug category not found");
-    //       }
-    //       return isCategory._id;
-    //     })
-    //   );
-    // }
     const filter = pickFilter(req.query, [
       "search",
       "categories",
@@ -41,7 +26,6 @@ const getAll = async (req, res) => {
     ]);
     const options = pickOption(req.query, ["sortBy", "limit", "page"]);
     // options.populate = "attributes.values,categories";
-    // options.populate = "categories";
     const result = await productService.getAllProducts(filter, options);
     const productsWithPriceRange = await Promise.all(
       result.results.map(async (product) => {
@@ -61,7 +45,6 @@ const getAll = async (req, res) => {
         return productObj;
       })
     );
-
     res
       .status(httpStatus.OK)
       .json({ ...result, results: productsWithPriceRange });
