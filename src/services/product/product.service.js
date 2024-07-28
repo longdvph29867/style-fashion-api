@@ -10,7 +10,7 @@ const getAllProducts = async (filter, options) => {
 
 const getProductById = async (id) => {
   const product = await Product.findOne({ _id: id })
-    .populate("attributes")
+    .populate({ path: "attributes", populate: "values" })
     .populate({ path: "categories", select: "-active" })
     .select("-active");
   if (!product) {
