@@ -48,7 +48,7 @@ const create = async (body) => {
 
 const updateProduct = async (id, body) => {
   const product = await getById(id);
-  if (body.slug && (await Product.isSlugTaken(body.slug))) {
+  if (body.slug && (await Product.isSlugTaken(body.slug, id))) {
     throw new ApiError(httpStatus.BAD_REQUEST, "Product already exists");
   }
   Object.assign(product, body);
@@ -98,6 +98,7 @@ const updateScoreReviewProduct = async (productId, score, type) => {
 const productService = {
   getAllProducts,
   create,
+  getById,
   updateProduct,
   getProductById,
   getProductBySlug,
