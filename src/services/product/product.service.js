@@ -1,7 +1,6 @@
 import Product from "../../models/Product/Product.model.js";
 import ApiError from "../../utils/ApiError.js";
 import httpStatus from "http-status";
-import attributeService from "./attribute.service.js";
 
 const getAllProducts = async(filter, options) => {
     const products = await Products.paginate(filter, options);
