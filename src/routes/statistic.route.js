@@ -3,12 +3,13 @@ import usersController from "../controllers/user.controller.js";
 import validate from "../middlewares/validate.js";
 import { auth } from "../middlewares/auth.js";
 import statisticCotroller from "../controllers/statistic.controller.js";
+import { statisticOrder } from "../validations/statistic.validation.js";
 
 const routerStatistic = Router();
 routerStatistic.get(
   "/order",
   //   auth("manageUsers"),
-  //   validate(getUsers),
+    validate(statisticOrder),
   statisticCotroller.order
 );
 export default routerStatistic;
@@ -34,15 +35,25 @@ export default routerStatistic;
  *         name: type
  *         schema:
  *           type: string
- *         description: User name
+ *         description: week, month, year
  *       - in: query
- *         name: value
+ *         name: time
  *         schema:
  *           type: string
- *         description: User role
+ *         description: Time
+ *       - in: query
+ *         name: year
+ *         schema:
+ *           type: string
+ *         description: Year
+ *       - in: query
+ *         name: orderStatus
+ *         schema:
+ *           type: number
+ *         description: order status
  *     responses:
  *       '200':
- *         description: The list of the user
+ *         description: The list of the statistic
  *         content:
  *           application/json:
  *             example: {}

@@ -1,9 +1,6 @@
-import httpStatus from "http-status";
-import ApiError from "../utils/ApiError.js";
-import User from "../models/User.model.js";
 import Order from "../models/Order.model.js";
 
-const order = async (startDate, endDate, groupFormat) => {
+const order = async (startDate, endDate, groupFormat, orderStatus) => {
   return await Order.aggregate([
     {
       $match: {
@@ -11,10 +8,18 @@ const order = async (startDate, endDate, groupFormat) => {
           $gte: startDate,
           $lte: endDate,
         },
+        orderStatus,
       },
     },
     {
-      $sort: { date: 1 },
+      $group: {
+        _id: { $dateToString: { format: groupFormat, date: "$createdAt" } },
+        totalAmount: { $sum: "$totalPrice" },
+        count: { $sum: 1 }
+      }
+    },
+    {
+      $sort: { _id: 1 },
     },
   ]);
 };
