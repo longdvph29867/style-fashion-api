@@ -1,6 +1,6 @@
 import httpStatus from "http-status";
 import cartService from "../services/cart.service.js";
-import Carts from "../models/carts.model.js";
+import Carts from "../models/Cart.model.js";
 import errorMessage from "../config/error.js";
 
 const CartController = {

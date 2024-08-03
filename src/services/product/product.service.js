@@ -3,12 +3,12 @@ import ApiError from "../../utils/ApiError.js";
 import httpStatus from "http-status";
 
 const getAllProducts = async(filter, options) => {
-    const products = await Products.paginate(filter, options);
+    const products = await Product.paginate(filter, options);
     return products;
 };
 
 const getProductByID = async(idProduct) => {
-    const product = await Products.findOne({ _id: idProduct })
+    const product = await Product.findOne({ _id: idProduct })
         .populate("attributes")
         .populate({ path: "categories", select: "-active" })
         .select("-active");
@@ -16,7 +16,7 @@ const getProductByID = async(idProduct) => {
 };
 
 const getProductBySlug = async(slugProduct) => {
-    const product = await Products.findOne({ slug: slugProduct })
+    const product = await Product.findOne({ slug: slugProduct })
         .populate("attributes")
         .populate({ path: "categories", select: "-active" })
         .select("-active");
@@ -24,7 +24,7 @@ const getProductBySlug = async(slugProduct) => {
 };
 
 const createProducts = async(bodyProduct) => {
-    if (await Products.isSlugTaken(bodyProduct.slug)) {
+    if (await Product.isSlugTaken(bodyProduct.slug)) {
         throw new ApiError(httpStatus.NOT_FOUND, "Products already exists");
     }
     const newAttrbutes = await attributeService.createAttributeMany(
@@ -41,7 +41,7 @@ const createProducts = async(bodyProduct) => {
     );
     const insertedIds = newAttrbutes.map((doc) => doc._id);
     const dataProduct = {...bodyProduct, attributes: insertedIds };
-    const newProduct = await Products.create(dataProduct);
+    const newProduct = await Product.create(dataProduct);
     if (!newProduct) {
         throw new ApiError(
             httpStatus.INTERNAL_SERVER_ERROR,
@@ -53,10 +53,10 @@ const createProducts = async(bodyProduct) => {
 
 const updateProducts = async(idProduct, bodyProduct) => {
     try {
-        if (await Products.isSlugTaken(bodyProduct.slug, idProduct)) {
+        if (await Product.isSlugTaken(bodyProduct.slug, idProduct)) {
             throw new ApiError(httpStatus.BAD_REQUEST, "Products already exists");
         }
-        const product = await Products.findById(idProduct);
+        const product = await Product.findById(idProduct);
         if (!product) {
             throw new ApiError(httpStatus.NOT_FOUND, "Products not found");
         }
@@ -73,7 +73,7 @@ const updateProducts = async(idProduct, bodyProduct) => {
         );
         const insertedIds = newAttrbutes.map((doc) => doc._id);
         const dataProduct = {...bodyProduct, attributes: insertedIds };
-        const updatedProduct = await Products.findByIdAndUpdate(
+        const updatedProduct = await Product.findByIdAndUpdate(
             idProduct, { $set: dataProduct }, { new: true, runValidators: true }
         );
 
@@ -89,7 +89,7 @@ const deleteProductById = async(productId) => {
     if (!product) {
         throw new ApiError(httpStatus.NOT_FOUND, "Product not found");
     }
-    await Products.findByIdAndUpdate(product.id, { active: false });
+    await Product.findByIdAndUpdate(product.id, { active: false });
     return product;
 };
 
@@ -97,7 +97,7 @@ const updateScoreReviewProduct = async(productId, score, type) => {
     if (!["update", "delete"].includes(type)) {
         throw new ApiError(httpStatus.BAD_REQUEST, "Invalid type specified");
     }
-    const product = await Products.findById(productId);
+    const product = await Product.findById(productId);
     if (!product) {
         throw new ApiError(httpStatus.NOT_FOUND, "Product not found");
     }

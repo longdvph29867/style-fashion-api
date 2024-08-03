@@ -1,5 +1,5 @@
 import httpStatus from "http-status";
-import Categories from "../models/category.model.js";
+import Categories from "../models/categories.model.js";
 import ApiError from "../utils/ApiError.js";
 
 export const createCategory = async (categoryBody) => {

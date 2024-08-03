@@ -1,7 +1,7 @@
 import httpStatus from "http-status";
 
 import ApiError from "../utils/ApiError.js";
-import Carts from "../models/carts.model.js";
+import Carts from "../models/Cart.model.js";
 import attributeService from "./product/attribute.service.js";
 
 const getCartsByIdUser = async (user_id) => {

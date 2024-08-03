@@ -1,4 +1,4 @@
-import Attributes from "../models/Product/Attributes.model.js";
+import Attributes from "../models/Product/Attribute.model.js";
 
 const getAttributeByID = async(attributeID) => {
     return await Attributes.findById(attributeID);
