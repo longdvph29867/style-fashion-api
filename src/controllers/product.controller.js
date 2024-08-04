@@ -79,7 +79,17 @@ const getDetail = async (req, res) => {
     } else {
       product = await productService.getProductBySlug(identifier);
     }
-    res.send(product);
+    const variants = await productVariantService.getByProduct(product.id);
+    const productObj = product.toObject();
+    productObj.id = productObj._id
+      ? productObj._id.toString()
+      : productObj.id.toString();
+    delete productObj._id;
+    delete productObj.__v;
+    delete productObj.createdAt;
+    delete productObj.updatedAt;
+    delete productObj.active;
+    res.send({ ...productObj, variants });
   } catch (err) {
     errorMessage(res, err);
   }
@@ -169,7 +179,24 @@ const updateAttributeProduct = async (req, res) => {
 
 const remove = async (req, res) => {
   try {
-    await productService.deleteProductById(req.params.id);
+    const { id } = req.params;
+
+    const product = await productService.getProductById(id);
+
+    // delete valueAttributes
+    await valueAttributesService.deleteMany(
+      product.attributes.flatMap((item) => item.values)
+    );
+
+    // delete attributes
+    await attributeService.deleteMany(
+      product.attributes.map((item) => item.id)
+    );
+
+    // delete productVariant
+    await productVariantService.deleteMany(id);
+
+    await productService.deleteProductById(id);
     res.status(httpStatus.NO_CONTENT).send();
   } catch (err) {
     errorMessage(res, err);

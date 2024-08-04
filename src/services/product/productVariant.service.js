@@ -5,12 +5,18 @@ const createMany = async (values) => {
   return result.map((value) => value._id);
 };
 
+const getByProduct = async (id) => {
+  const result = await ProductVariant.find({ product: id });
+  return result;
+};
+
 const deleteMany = async (id) => {
   return await ProductVariant.deleteMany({ product: id });
 };
 
 const productVariantService = {
   createMany,
+  getByProduct,
   deleteMany,
 };
 
