@@ -30,6 +30,12 @@ cartRouter.put(
   validate(updateProduct),
   productController.update
 );
+cartRouter.put(
+  "/attributes/:id",
+  auth("manageProducts"),
+  validate(updateAttributeProduct),
+  productController.updateAttributeProduct
+);
 cartRouter.delete(
   "/:id",
   auth("manageProducts"),
