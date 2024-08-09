@@ -23,9 +23,9 @@ const cartSchema = new mongoose.Schema(
             required: [true, "Quantity cannot be blank"],
             min: [1, "The quantity must be greater than 0"],
           },
-          attribute: {
+          variant: {
             type: mongoose.Schema.Types.ObjectId,
-            ref: "Attribute",
+            ref: "ProductVariants",
             required: true,
           },
         },

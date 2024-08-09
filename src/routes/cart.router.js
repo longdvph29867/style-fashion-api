@@ -1,39 +1,24 @@
 import express from "express";
 import validate from "../middlewares/validate.js";
 import cartController from "../controllers/cart.controller.js";
-import {
-  addToCart,
-  deleteProductCart,
-  getCart,
-  updateProductCart,
-} from "../validations/cart.validation.js";
+import { addToCart, deleteProductCart, getCart, updateProductCart } from "../validations/cart.validation.js";
 import { auth } from "../middlewares/auth.js";
 const cartRouter = express.Router();
 
 cartRouter.get(
   "/",
-  auth("manageCarts"),
+  // auth("manageCarts"),
   validate(getCart),
   cartController.getCart
 );
 cartRouter.post(
   "/",
-  auth("manageCarts"),
+  // auth("manageCarts"),
   validate(addToCart),
   cartController.addToCart
 );
-cartRouter.put(
-  "/",
-  auth("manageCarts"),
-  validate(updateProductCart),
-  cartController.updateCart
-);
-cartRouter.delete(
-  "/",
-  auth("manageCarts"),
-  validate(deleteProductCart),
-  cartController.remove
-);
+cartRouter.put("/", validate(updateProductCart), cartController.updateCart);
+cartRouter.delete("/", auth("manageCarts"), validate(deleteProductCart), cartController.remove);
 export default cartRouter;
 
 /**

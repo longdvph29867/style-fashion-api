@@ -7,7 +7,7 @@ export const addToCart = {
   }),
   body: Joi.object().keys({
     product: Joi.string().required().custom(objectId),
-    attribute: Joi.string().required().custom(objectId),
+    variant: Joi.string().required().custom(objectId),
     quantity: Joi.number().min(1).required(),
   }),
 };

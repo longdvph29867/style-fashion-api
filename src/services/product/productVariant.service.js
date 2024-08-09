@@ -10,6 +10,11 @@ const getByProduct = async (id) => {
   return result;
 };
 
+const getById = async (id) => {
+  const result = await ProductVariant.findById(id);
+  return result;
+};
+
 const deleteMany = async (id) => {
   return await ProductVariant.deleteMany({ product: id });
 };
@@ -18,6 +23,7 @@ const productVariantService = {
   createMany,
   getByProduct,
   deleteMany,
+  getById,
 };
 
 export default productVariantService;

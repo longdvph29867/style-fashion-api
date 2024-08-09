@@ -16,12 +16,8 @@ const CartController = {
 
   async addToCart(req, res) {
     try {
-      const cart = await cartService.addToCartByIdUser(
-        req.query.userId,
-        req.body
-      );
-      const newCart = await cartService.getCartsByIdUser(req.query.userId);
-      res.status(httpStatus.CREATED).send(newCart);
+      const cart = await cartService.addToCartByIdUser(req.query.userId, req.body);
+      res.status(httpStatus.CREATED).send(cart);
     } catch (err) {
       errorMessage(res, err);
     }
@@ -39,9 +35,9 @@ const CartController = {
       if (!cart) {
         throw new ApiError(httpStatus.BAD_REQUEST, "Cart not found");
       }
-
-      const newProductsCart = cart.products_cart.map((item) => {
+      const newProductsCart = cart.products_cart.map(async (item) => {
         if (item._id.toString() === cartItemId) {
+          const variant = await productVariantService.getById(cartBody.variant);
           item.quantity = body.quantity;
           return item;
         }
