@@ -28,26 +28,7 @@ const CartController = {
       const userId = req.query.userId;
       const cartItemId = req.query.cartItemId;
       const body = req.body;
-      const cart = await Carts.findOne({
-        user: userId,
-      });
-
-      if (!cart) {
-        throw new ApiError(httpStatus.BAD_REQUEST, "Cart not found");
-      }
-      const newProductsCart = cart.products_cart.map(async (item) => {
-        if (item._id.toString() === cartItemId) {
-          const variant = await productVariantService.getById(cartBody.variant);
-          item.quantity = body.quantity;
-          return item;
-        }
-        return item;
-      });
-
-      const cartUpdate = await cartService.updateCartByIdProductCart(userId, {
-        ...body,
-        products_cart: newProductsCart,
-      });
+      const cartUpdate = await cartService.updateCartByIdProductCart(userId, cartItemId, body.quantity);
       res.status(httpStatus.CREATED).send(cartUpdate);
     } catch (err) {
       errorMessage(res, err);

@@ -5,19 +5,9 @@ import { addToCart, deleteProductCart, getCart, updateProductCart } from "../val
 import { auth } from "../middlewares/auth.js";
 const cartRouter = express.Router();
 
-cartRouter.get(
-  "/",
-  // auth("manageCarts"),
-  validate(getCart),
-  cartController.getCart
-);
-cartRouter.post(
-  "/",
-  // auth("manageCarts"),
-  validate(addToCart),
-  cartController.addToCart
-);
-cartRouter.put("/", validate(updateProductCart), cartController.updateCart);
+cartRouter.get("/", auth("manageCarts"), validate(getCart), cartController.getCart);
+cartRouter.post("/", auth("manageCarts"), validate(addToCart), cartController.addToCart);
+cartRouter.put("/", auth("manageCarts"), validate(updateProductCart), cartController.updateCart);
 cartRouter.delete("/", auth("manageCarts"), validate(deleteProductCart), cartController.remove);
 export default cartRouter;
 
@@ -70,18 +60,18 @@ export default cartRouter;
  *             type: object
  *             required:
  *               - product
- *               - attribute
+ *               - variant
  *               - quantity
  *             properties:
  *               product:
  *                 type: string
- *               attribute:
+ *               variant:
  *                 type: string
  *               quantity:
  *                 type: number
  *           example:
  *             product: "Object ID"
- *             attribute: "Object ID"
+ *             variant: "Object ID"
  *             quantity: "String"
  *     responses:
  *       '200':
